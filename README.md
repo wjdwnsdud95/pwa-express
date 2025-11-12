@@ -12,3 +12,9 @@ middlewares/
   ├─ validators/ # 필요한 field를 모아서 한기능에서 사용하는 데이터들을 검증하는 로직이 들어가 있는 디렉토리
   └─ validationHandler.js # 유효성 검사 통과 여부에 따른 공토 처리 미들웨어
 ```
+
+# DB 연동
+## 설치
+```
+npm i mysql2 sequelize sequelize-cli
+```

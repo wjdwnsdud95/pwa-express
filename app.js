@@ -4,6 +4,7 @@ import express from 'express'; // express 모듈 가져오기
 import authRouter from './routes/auth.router.js';
 import usersRouter from './routes/users.router.js';
 import { eduTest, eduUsersTest } from './app/middlewares/edu/edu.middleware.js';
+import { errorHandler } from './app/middlewares/errors/error-handler.js';
 
 const app = express();
 app.use(express.json()); // JSON으로 올 경우 파싱 처리
@@ -71,6 +72,18 @@ app.post('/api/posts', (request, response, next) => {
 app.use('/api', authRouter);
 app.use('/api/users', eduUsersTest, usersRouter);
 
+// 에러 테스트용 라우트
+app.get('/error', (request, response, next) => {
+  // 'throw'를 이용하여 에러 핸들링 처리도 가능
+  // 비동기 처리 내부에서는 사용하면 에러 핸들러가 핸들링 못하고 crashed 오류나고 서버가 정지
+  // throw new Error('쓰로우로 예외 발생');
+
+  // 비동기 처리 내부에서는 반드시 `next(error)`를 이용해야 서버 crashed(심각한 오류) 안 일어남
+  setTimeout(() => {
+    next(new Error('쓰로우로 예외 발생'));
+  }, 1000);
+});
+
 // ------------ 
 // 대체 라우트(모든 라우터 중에 가장 마지막에 작성)
 app.use((request, response, next) => {
@@ -80,6 +93,10 @@ app.use((request, response, next) => {
    });
 });
 
+// ------------
+// error Handler 등록
+// ------------
+app.use(errorHandler);
 
 // 서버를 주어진 포트에서 시작
 app.listen(3000);
