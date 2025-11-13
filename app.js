@@ -5,10 +5,11 @@ import authRouter from './routes/auth.router.js';
 import usersRouter from './routes/users.router.js';
 import { eduTest, eduUsersTest } from './app/middlewares/edu/edu.middleware.js';
 import { errorHandler } from './app/middlewares/errors/error-handler.js';
+import eduRouter from './routes/edu.router.js';
 
 const app = express();
 app.use(express.json()); // JSON으로 올 경우 파싱 처리
-app.use(eduTest); // 커스텀 미들웨어 전역 등록
+// app.use(eduTest); // 커스텀 미들웨어 전역 등록
 
 // request: 유저가 보내온 요청을 받아 모든 정보들을 모아 놓는 역할
 // response: 유저한테 데이터를 전달하는 역할
@@ -71,6 +72,7 @@ app.post('/api/posts', (request, response, next) => {
 // 라우트를 모듈로 나누고 그룹핑하여 관리
 app.use('/api', authRouter);
 app.use('/api/users', eduUsersTest, usersRouter);
+app.use(eduRouter);
 
 // 에러 테스트용 라우트
 app.get('/error', (request, response, next) => {
