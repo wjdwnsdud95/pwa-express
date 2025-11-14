@@ -74,7 +74,7 @@ const attributes = {
   },
   createdAt: {
     field: 'created_at',
-    type: DataTypes.NOW,
+    type: DataTypes.DATE,
     allowNull: false,
     comment: '작성일',
     get() {
@@ -130,6 +130,12 @@ const Employee = {
 
     return defineEmployee;
   },
+  // 모델 관계를 정의
+  associate: (db) => {
+    // 1:n 관계에서 부모 모델에 설정하는 방법(1명의 사원은 복수의 직급 정보를 가진다.)
+    // 1:1 관계는 hasOne() 메소드를 사용
+    db.Employee.hasMany(db.TitleEmp, { sourceKey: 'empId', foreignKey: 'empId', as: 'titleEmps' });
+  }
 };
 
 export default Employee;

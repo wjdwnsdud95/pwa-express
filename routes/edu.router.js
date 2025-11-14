@@ -2,7 +2,7 @@ import express from 'express';
 import db from '../app/models/index.js';
 import { Op } from 'sequelize';
 import dayjs from 'dayjs';
-const { sequelize, Employee } = db;
+const { sequelize, Employee, TitleEmp, Title } = db;
 
 const eduRouter = express.Router();
 
@@ -194,13 +194,46 @@ eduRouter.get('/api/edu', async (request, response, next) => {
 
     // ------------------------------------
     // groupby, having
-    result = await Employee.findAll({
-      attributes: [
-        'gender',
-        [sequelize.fn('COUNT', sequelize.col('*')), 'cnt_gender']
+    // result = await Employee.findAll({
+    //   attributes: [
+    //     'gender',
+    //     [sequelize.fn('COUNT', sequelize.col('*')), 'cnt_gender']
+    //   ],
+    //   group: ['gender'],
+    //   having: sequelize.literal('cnt_gender >= 40000'),
+    // });
+
+    // ------------------------------------
+    // join
+    result = await Employee.findOne({
+      attributes: ['empId', 'name'],
+      where: {
+        empId: 1
+      },
+      include: [
+        {
+          model: TitleEmp, // 내가 연결할 모델
+          as: 'titleEmps', // 내가 사용할 관계
+          // `required` 속성을 안 넣었을 때 디폴트 값으로 Left Outer Join로 설정되어 있음
+          required: true, // `true`면 Inner Join, `false`면 Left Outer Join
+          attributes: ['titleCode'],
+          where: {
+            endAt: {
+              [Op.is]: null,
+            }
+          },
+          include: [
+            {
+              model: Title, // 내가 연결할 모델
+              as: 'title', // 내가 사용할 관계
+              // 위 방식으로 사용하거나 아래 방식으로 사용(선택 사항)
+              // association: 'title', // as 명으로만 입력
+              required: true,
+              attributes: ['title'],
+            }
+          ]
+        }
       ],
-      group: ['gender'],
-      having: sequelize.literal('cnt_gender >= 40000'),
     });
 
 
